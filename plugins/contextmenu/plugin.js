@@ -97,7 +97,8 @@ CKEDITOR.plugins.add( 'contextmenu', {
 							offsetY = fromFrame ? domEvent.$.clientY : domEvent.$.pageY || scroll.y + domEvent.$.clientY;
 
 						CKEDITOR.tools.setTimeout( function() {
-							this.open( offsetParent, null, offsetX, offsetY );
+							/* C1 changes */
+							//this.open( offsetParent, null, offsetX, offsetY );
 
 							// IE needs a short while to allow selection change before opening menu. (#7908)
 						}, CKEDITOR.env.ie ? 200 : 0, this );
