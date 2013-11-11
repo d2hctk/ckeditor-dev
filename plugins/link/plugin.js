@@ -11,7 +11,7 @@ CKEDITOR.plugins.add( 'link', {
 	onLoad: function() {
 		// Add the CSS styles for anchor placeholders.
 		var iconPath = CKEDITOR.getUrl( this.path + 'images' + ( CKEDITOR.env.hidpi ? '/hidpi' : '' ) + '/anchor.png' ),
-			baseStyle = 'background:url(' + iconPath + ') no-repeat %1 center;border:1px dotted #00f;background-size:16px;';
+			baseStyle = 'background:url(' + iconPath + ') no-repeat %1 center;color:inherit;background-size:16px;';
 
 		var template = '.%2 a.cke_anchor,' +
 			'.%2 a.cke_anchor_empty' +
