@@ -15,7 +15,18 @@ body
 	/* Remove the background color to make it transparent */
 	background-color: #fff;
 
-	margin: 20px;
+	/* C1 changes */
+	/* margin: 20px; */
+}
+
+/* C1 changes */
+td, caption {
+	padding-top: 8px;
+}
+
+/* C1 changes */
+caption {
+	border: 1px solid #999;
 }
 
 .cke_editable
