@@ -43,6 +43,12 @@ other files.
    (e.g. display labels on specific buttons) */
 @import url("presets.css");
 
+/* C1 changes start*/
+#cke_1_bottom {
+	display: none !important;
+}
+/* C1 changes end*/
+
 /* Important!
    To avoid showing the editor UI while its styles are still not available, the
    editor creates it with visibility:hidden. Here, we restore the UI visibility. */

@@ -19,15 +19,15 @@ body
 	/* margin: 20px; */
 }
 
-/* C1 changes */
+/* C1 changes start*/
 td, caption {
 	padding-top: 8px;
 }
 
-/* C1 changes */
 caption {
 	border: 1px solid #999;
 }
+/* C1 changes end*/
 
 .cke_editable
 {
