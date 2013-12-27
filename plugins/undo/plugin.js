@@ -491,6 +491,45 @@
 			editor.fire( 'change' );
 		},
 
+		// C1
+		getUndoCount: function(){
+			if (this.hasUndo == false) return 0;
+			var currentImage = this.currentImage,
+				image,
+				index = this.index + 1;
+			if (!currentImage) return 0;
+			
+			var snapshots = this.snapshots;
+			if (snapshots.length == 0) return 0;
+			
+			this.save( true );
+			
+			for (var i = index - 1; i >= 0; i-- ) {
+				image = snapshots[ i ];
+				if ( !currentImage.equalsContent( image ) ) {
+					i++;
+					break;
+				}
+			}	
+			
+			var sOld = null,
+				sNew = null,
+				qty = 0;
+			for(var s = 0; s <= i; s++){
+				var sNew = snapshots[s];
+				if (sOld === null){
+					sOld = sNew;
+					continue;
+				}
+				if (sOld.equalsContent(sNew))
+					continue;
+				sOld = sNew;
+				qty++;
+			}
+			
+			return qty;
+		},
+		
 		// Get the closest available image.
 		getNextImage: function( isUndo ) {
 			var snapshots = this.snapshots,
