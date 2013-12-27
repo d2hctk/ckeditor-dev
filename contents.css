@@ -5,18 +5,13 @@ For licensing, see LICENSE.md or http://ckeditor.com/license
 
 body
 {
-	/* Font */
+ 	/* C1
 	font-family: sans-serif, Arial, Verdana, "Trebuchet MS";
 	font-size: 12px;
-
-	/* Text color */
 	color: #333;
-
-	/* Remove the background color to make it transparent */
 	background-color: #fff;
-
-	/* C1 changes */
-	/* margin: 20px; */
+	margin: 20px;
+	*/
 }
 
 /* C1 changes start*/
@@ -29,6 +24,7 @@ caption {
 }
 /* C1 changes end*/
 
+/*
 .cke_editable
 {
 	font-size: 13px;
@@ -66,9 +62,7 @@ a
 
 ol,ul,dl
 {
-	/* IE7: reset rtl list margin. (#7334) */
 	*margin-right: 0px;
-	/* preserved spaces for list items with text direction other than the list. (#6249,#8049)*/
 	padding: 0 40px;
 }
 
@@ -105,8 +99,8 @@ img:hover {
 
 pre
 {
-	white-space: pre-wrap; /* CSS 2.1 */
-	word-wrap: break-word; /* IE7 */
+	white-space: pre-wrap;
+	word-wrap: break-word;
 }
 
 .marker {
@@ -117,3 +111,4 @@ span[lang]
 {
    font-style: italic;
 }
+*/
