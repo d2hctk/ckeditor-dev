@@ -250,9 +250,16 @@ CKEDITOR.tools.extend( CKEDITOR.dom.element.prototype, {
 	},
 
 	/**
-	 * @todo
+	 * Appends a `<br>` filler element to this element if the filler is not present already.
+	 * By default filler is appended only if {@link CKEDITOR.env#needsBrFiller} is `true`,
+	 * however when `force` is set to `true` filler will be appended regardless of the environment.
+	 *
+	 * @param {Boolean} [force] Append filler regardless of the environment.
 	 */
-	appendBogus: function() {
+	appendBogus: function( force ) {
+		if ( !force && !( CKEDITOR.env.needsBrFiller || CKEDITOR.env.opera ) )
+			return;
+
 		var lastChild = this.getLast();
 
 		// Ignore empty/spaces text.
@@ -1868,6 +1875,52 @@ CKEDITOR.tools.extend( CKEDITOR.dom.element.prototype, {
 		removeTmpId();
 
 		return found ? new CKEDITOR.dom.element( found ) : null;
+	},
+
+	/**
+	 * Traverse the DOM of this element (inclusive), executing a callback for
+	 * each node.
+	 *
+	 *		var element = CKEDITOR.dom.element.createFromHtml( '<div><p>foo<b>bar</b>bom</p></div>' );
+	 *		element.forEach( function( node ) {
+	 *			console.log( node );
+	 *		} );
+	 *		// Will log:
+	 *		// 1. <div> element,
+	 *		// 2. <p> element,
+	 *		// 3. "foo" text node,
+	 *		// 4. <b> element,
+	 *		// 5. "bar" text node,
+	 *		// 6. "bom" text node.
+	 *
+	 * @since 4.3
+	 * @param {Function} callback Function to be executed on every node.
+	 * If `callback` returns `false` descendants of the node will be ignored.
+	 * @param {CKEDITOR.htmlParser.node} callback.node Node passed as argument.
+	 * @param {Number} [type] If specified `callback` will be executed only on
+	 * nodes of this type.
+	 * @param {Boolean} [skipRoot] Don't execute `callback` on this element.
+	 */
+	forEach: function( callback, type, skipRoot ) {
+		if ( !skipRoot && ( !type || this.type == type ) )
+				var ret = callback( this );
+
+		// Do not filter children if callback returned false.
+		if ( ret === false )
+			return;
+
+		var children = this.getChildren(),
+			node,
+			i = 0;
+
+		// We do not cache the size, because the live list of nodes may be changed by the callback.
+		for ( ; i < children.count(); i++ ) {
+			node = children.getItem( i );
+			if ( node.type == CKEDITOR.NODE_ELEMENT )
+				node.forEach( callback, type );
+			else if ( !type || node.type == type )
+				callback( node );
+		}
 	}
 });
 

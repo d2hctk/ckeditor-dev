@@ -28,8 +28,7 @@ if ( !CKEDITOR.env ) {
 			 *
 			 * @property {Boolean}
 			 */
-			ie: eval( '/*@cc_on!@*/false' ),
-			// Use eval to preserve conditional comment when compiling with Google Closure Compiler (#93).
+			ie: ( agent.indexOf( 'trident/' ) > -1 ),
 
 			/**
 			 * Indicates that CKEditor is running in Opera.
@@ -72,14 +71,23 @@ if ( !CKEDITOR.env ) {
 			mac: ( agent.indexOf( 'macintosh' ) > -1 ),
 
 			/**
-			 * Indicates that CKEditor is running in a Quirks Mode environemnt.
+			 * Indicates that CKEditor is running in a Quirks Mode environment.
 			 *
 			 *		if ( CKEDITOR.env.quirks )
 			 *			alert( 'Nooooo!' );
 			 *
+			 * Internet Explorer 10 introduced the _New Quirks Mode_, which is similar to the _Quirks Mode_
+			 * implemented in other modern browsers and defined in the HTML5 specification. It can be handled
+			 * as the Standards mode, so the value of this property will be set to `false`.
+			 *
+			 * The _Internet Explorer 5 Quirks_ mode which is still available in Internet Explorer 10+
+			 * sets this value to `true` and {@link #version} to `7`.
+			 *
+			 * Read more: [IEBlog](http://blogs.msdn.com/b/ie/archive/2011/12/14/interoperable-html5-quirks-mode-in-ie10.aspx)
+			 *
 			 * @property {Boolean}
 			 */
-			quirks: ( document.compatMode == 'BackCompat' ),
+			quirks: ( document.compatMode == 'BackCompat' && ( !document.documentMode || document.documentMode < 10 ) ),
 
 			/**
 			 * Indicates that CKEditor is running in a mobile environemnt.
@@ -141,7 +149,7 @@ if ( !CKEDITOR.env ) {
 		 *
 		 * @property {Boolean}
 		 */
-		env.gecko = ( navigator.product == 'Gecko' && !env.webkit && !env.opera );
+		env.gecko = ( navigator.product == 'Gecko' && !env.webkit && !env.opera && !env.ie );
 
 		/**
 		 * Indicates that CKEditor is running in Chrome.
@@ -181,7 +189,7 @@ if ( !CKEDITOR.env ) {
 			env.ie9Compat = version == 9;
 			env.ie8Compat = version == 8;
 			env.ie7Compat = version == 7;
-			env.ie6Compat = version < 7 || ( env.quirks && version < 10 );
+			env.ie6Compat = version < 7 || env.quirks;
 
 			/**
 			 * Indicates that CKEditor is running in an IE6-like environment, which
@@ -287,6 +295,24 @@ if ( !CKEDITOR.env ) {
 		 * @property {Boolean}
 		 */
 		env.hidpi = window.devicePixelRatio >= 2;
+
+		/**
+		 * Indicates that CKEditor is running in a browser which uses a bogus
+		 * `<br>` filler in order to correctly display caret in empty blocks.
+		 *
+		 * @since 4.3
+		 * @property {Boolean}
+		 */
+		env.needsBrFiller = env.gecko || env.webkit || ( env.ie && version > 10 );
+
+		/**
+		 * Indicates that CKEditor is running in a browser which needs a
+		 * non-breaking space filler in order to correctly display caret in empty blocks.
+		 *
+		 * @since 4.3
+		 * @property {Boolean}
+		 */
+		env.needsNbspFiller = env.ie && version < 11;
 
 		/**
 		 * A CSS class that denotes the browser where CKEditor runs and is appended

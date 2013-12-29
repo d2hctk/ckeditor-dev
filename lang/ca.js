@@ -20,6 +20,7 @@
 CKEDITOR.lang[ 'ca' ] = {
 	// ARIA description.
 	editor: 'Editor de text enriquit',
+	editorPanel: 'Panell de l\'editor de text enriquit',
 
 	// Common messages and labels.
 	common: {

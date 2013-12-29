@@ -218,6 +218,12 @@
 	}
 
 	function updateCommandsContext( editor, path, forceRefresh ) {
+		// Commands cannot be refreshed without a path. In edge cases
+		// it may happen that there's no selection when this function is executed.
+		// For example when active filter is changed in #10877.
+		if ( !path )
+			return;
+
 		var command,
 			name,
 			commands = editor.commands;
@@ -1168,7 +1174,10 @@
 				if ( filter === this.filter )
 					this.setActiveEnterMode( null, null );
 				else
-					this.setActiveEnterMode( filter.getAllowedEnterMode(), filter.getAllowedEnterMode( true ) );
+					this.setActiveEnterMode(
+						filter.getAllowedEnterMode( this.enterMode ),
+						filter.getAllowedEnterMode( this.shiftEnterMode, true )
+					);
 			}
 		},
 
@@ -1744,5 +1753,16 @@ CKEDITOR.ELEMENT_MODE_INLINE = 3;
  * See {@link #contentDom} documentation for more details.
  *
  * @event contentDomUnload
+ * @param {CKEDITOR.editor} editor This editor instance.
+ */
+
+/**
+ * The event fired when contents DOM changes and some of the references as well as
+ * native DOM event listeners could be lost.
+ * This event is useful when it is important to keep track of references
+ * to elements in the editable contents from code.
+ *
+ * @since 4.3
+ * @event contentDomInvalidated
  * @param {CKEDITOR.editor} editor This editor instance.
  */

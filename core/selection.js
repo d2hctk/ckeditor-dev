@@ -378,6 +378,28 @@
 		};
 	}
 
+	// If fake selection should be applied this function will return instance of
+	// CKEDITOR.dom.element which should gain fake selection.
+	function getNonEditableFakeSelectionReceiver( ranges ) {
+		var enclosedNode, shrinkedNode, clone, range;
+
+		if ( ranges.length == 1 && !( range = ranges[ 0 ] ).collapsed &&
+			( enclosedNode = range.getEnclosedNode() ) && enclosedNode.type == CKEDITOR.NODE_ELEMENT ) {
+			// So far we can't say that enclosed element is non-editable. Before checking,
+			// we'll shrink range (clone). Shrinking will stop on non-editable range, or
+			// innermost element (#11114).
+			clone = range.clone();
+			clone.shrink( CKEDITOR.SHRINK_ELEMENT, true );
+
+			// If shrinked range still encloses an element, check this one (shrink stops only on non-editable elements).
+			if ( ( shrinkedNode = clone.getEnclosedNode() ) && shrinkedNode.type == CKEDITOR.NODE_ELEMENT )
+				enclosedNode = shrinkedNode;
+
+			if ( enclosedNode.getAttribute( 'contenteditable' ) == 'false' )
+				return enclosedNode;
+		}
+	}
+
 	// Setup all editor instances for the necessary selection hooks.
 	CKEDITOR.on( 'instanceCreated', function( ev ) {
 		var editor = ev.editor;
@@ -470,8 +492,8 @@
 					// when editor has no focus, remember this scroll
 					// position and revert it before context menu opens. (#5778)
 					if ( evt.data.$.button == 2 ) {
-						var sel = editor.document.$.selection;
-						if ( sel.type == 'None' )
+						var sel = editor.document.getSelection();
+						if ( !sel || sel.getType() == CKEDITOR.SELECTION_NONE )
 							scroll = editor.window.getScrollPosition();
 					}
 				});
@@ -552,7 +574,8 @@
 					}
 
 					// It's much simpler for IE8+, we just need to reselect the reported range.
-					if ( CKEDITOR.env.version > 7 ) {
+					// This hack does not work on IE>=11 because there's no old selection&range APIs.
+					if ( CKEDITOR.env.version > 7 && CKEDITOR.env.version < 11 ) {
 						html.on( 'mousedown', function( evt ) {
 							if ( evt.data.getTarget().is( 'html' ) ) {
 								// Limit the text selection mouse move inside of editable. (#9715)
@@ -1204,18 +1227,8 @@
 								endIndex = index - 1;
 							else if ( position < 0 )
 								startIndex = index + 1;
-							else {
-								// IE9 report wrong measurement with compareEndPoints when range anchors between two BRs.
-								// e.g. <p>text<br />^<br /></p> (#7433)
-								if ( CKEDITOR.env.ie9Compat && child.tagName == 'BR' ) {
-									// "Fall back" to w3c selection.
-									var sel = doc.defaultView.getSelection();
-									return {
-										container: sel[ start ? 'anchorNode' : 'focusNode' ],
-										offset: sel[ start ? 'anchorOffset' : 'focusOffset' ] };
-								} else
-									return { container: parent, offset: getNodeIndex( child ) };
-							}
+							else
+								return { container: parent, offset: getNodeIndex( child ) };
 						}
 
 						// All childs are text nodes,
@@ -1722,13 +1735,10 @@
 			}
 
 			// Handle special case - automatic fake selection on non-editable elements.
-			var enclosedNode;
-			if (
-				ranges.length == 1 && !ranges[ 0 ].collapsed &&
-				( enclosedNode = ranges[ 0 ].getEnclosedNode() ) &&
-				enclosedNode.type == CKEDITOR.NODE_ELEMENT && enclosedNode.getAttribute( 'contenteditable' ) == 'false'
-			) {
-				this.fake( enclosedNode );
+			var receiver = getNonEditableFakeSelectionReceiver( ranges );
+
+			if ( receiver ) {
+				this.fake( receiver );
 				return;
 			}
 
@@ -1967,6 +1977,9 @@
 		fake: function( element ) {
 			var editor = this.root.editor;
 
+			// Cleanup after previous selection - e.g. remove hidden sel container.
+			this.reset();
+
 			hideSelection( editor );
 
 			// Set this value after executing hiseSelection, because it may
@@ -1974,7 +1987,7 @@
 			var cache = this._.cache;
 
 			// Caches a range than holds the element.
-			var range = new CKEDITOR.dom.range( element.getDocument() );
+			var range = new CKEDITOR.dom.range( this.root );
 			range.setStartBefore( element );
 			range.setEndAfter( element );
 			cache.ranges = new CKEDITOR.dom.rangeList( range );

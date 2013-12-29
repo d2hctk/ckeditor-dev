@@ -32,7 +32,7 @@ CKEDITOR.plugins.add( 'colorbutton', {
 				label: title,
 				title: title,
 				modes: { wysiwyg:1 },
-				editorFocus: 1,
+				editorFocus: 0,
 				toolbar: 'colors,' + order,
 				allowedContent: style,
 				requiredContent: style,
@@ -62,6 +62,11 @@ CKEDITOR.plugins.add( 'colorbutton', {
 					keys[ 32 ] = 'click'; // SPACE
 				},
 
+				refresh: function() {
+					if ( !editor.activeFilter.check( style ) )
+						this.setState( CKEDITOR.TRISTATE_DISABLED );
+				},
+
 				// The automatic colorbox should represent the real color (#6010)
 				onOpen: function() {
 
@@ -69,6 +74,9 @@ CKEDITOR.plugins.add( 'colorbutton', {
 						block = selection && selection.getStartElement(),
 						path = editor.elementPath( block ),
 						color;
+
+					if ( !path )
+						return;
 
 					// Find the closest block element.
 					block = path.block || path.blockLimit || editor.document.getBody();

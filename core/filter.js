@@ -96,6 +96,16 @@
 		 */
 		this.editor = null;
 
+		/**
+		 * Filter's unique id. It can be used to find filter instance in
+		 * {@link CKEDITOR.filter#instances CKEDITOR.filter.instance} object.
+		 *
+		 * @since 4.3
+		 * @readonly
+		 * @property {Number} id
+		 */
+		this.id = CKEDITOR.tools.getNextNumber();
+
 		this._ = {
 			// Optimized allowed content rules.
 			rules: {},
@@ -103,6 +113,9 @@
 			transformations: {},
 			cachedTests: {}
 		};
+
+		// Register filter instance.
+		CKEDITOR.filter.instances[ this.id ] = this;
 
 		if ( editorOrRules instanceof CKEDITOR.editor ) {
 			var editor = this.editor = editorOrRules;
@@ -131,6 +144,19 @@
 			this.allow( editorOrRules, 'default', 1 );
 		}
 	};
+
+	/**
+	 * Object containing all filter instances stored under their
+	 * {@link #id} properties.
+	 *
+	 *		var filter = new CKEDITOR.filter( 'p' );
+	 *		filter === CKEDITOR.filter.instances[ filter.id ];
+	 *
+	 * @since 4.3
+	 * @static
+	 * @property instances
+	 */
+	CKEDITOR.filter.instances = {};
 
 	CKEDITOR.filter.prototype = {
 		/**
@@ -280,7 +306,7 @@
 
 			var node, element, check,
 				toBeChecked = [],
-				enterTag = enterModeTags[ enterMode || ( this.editor ? this.editor.activeEnterMode : CKEDITOR.ENTER_P ) ];
+				enterTag = enterModeTags[ enterMode || ( this.editor ? this.editor.enterMode : CKEDITOR.ENTER_P ) ];
 
 			// Remove elements in reverse order - from leaves to root, to avoid conflicts.
 			while ( ( node = toBeRemoved.pop() ) ) {
@@ -656,20 +682,27 @@
 		 * Returns first enter mode allowed by this filter rules. Modes are checked in `p`, `div`, `br` order.
 		 * If none of tags is allowed this method will return {@link CKEDITOR#ENTER_BR}.
 		 *
+		 * @since 4.3
+		 * @param {Number} defaultMode The default mode which will be checked as the first one.
 		 * @param {Boolean} [reverse] Whether to check modes in reverse order (used for shift enter mode).
 		 * @returns {Number} Allowed enter mode.
 		 */
 		getAllowedEnterMode: (function() {
-			var enterModeTags = [ 'p', 'div', 'br' ],
+			var tagsToCheck = [ 'p', 'div', 'br' ],
 				enterModes = {
 					p: CKEDITOR.ENTER_P,
 					div: CKEDITOR.ENTER_DIV,
 					br: CKEDITOR.ENTER_BR
 				};
 
-			return function( reverse ) {
-				var tags = enterModeTags.slice(),
+			return function( defaultMode, reverse ) {
+				// Clone the array first.
+				var tags = tagsToCheck.slice(),
 					tag;
+
+				// Check the default mode first.
+				if ( this.check( enterModeTags[ defaultMode ] ) )
+					return defaultMode;
 
 				// If not reverse order, reverse array so we can pop() from it.
 				if ( !reverse )

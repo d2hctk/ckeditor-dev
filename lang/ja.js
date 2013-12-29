@@ -20,6 +20,7 @@
 CKEDITOR.lang[ 'ja' ] = {
 	// ARIA description.
 	editor: 'リッチテキストエディタ',
+	editorPanel: 'リッチテキストエディタパネル',
 
 	// Common messages and labels.
 	common: {

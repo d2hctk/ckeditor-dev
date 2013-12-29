@@ -5,7 +5,9 @@ For licensing, see LICENSE.md or http://ckeditor.com/license
 CKEDITOR.plugins.setLang( 'mathjax', 'en', {
 	title: 'Mathematics in TeX',
 	button: 'Math',
-	dialogInput: 'Write you TeX here',
+	dialogInput: 'Write your TeX here',
 	docUrl: 'http://en.wikibooks.org/wiki/LaTeX/Mathematics',
-	docLabel: 'TeX documentation'
+	docLabel: 'TeX documentation',
+	loading: 'loading...',
+	pathName: 'math'
 } );

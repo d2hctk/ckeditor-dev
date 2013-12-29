@@ -20,6 +20,7 @@
 CKEDITOR.lang[ 'it' ] = {
 	// ARIA description.
 	editor: 'Rich Text Editor',
+	editorPanel: 'Pannello Rich Text Editor',
 
 	// Common messages and labels.
 	common: {

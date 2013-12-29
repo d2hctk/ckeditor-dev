@@ -20,6 +20,7 @@
 CKEDITOR.lang[ 'ru' ] = {
 	// ARIA description.
 	editor: 'Визуальный текстовый редактор',
+	editorPanel: 'Визуальный редактор текста',
 
 	// Common messages and labels.
 	common: {
