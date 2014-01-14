@@ -92,19 +92,31 @@
 				rtl ? pillarLeft = x : pillarRight = x + table.$.offsetWidth;
 			}
 
+			// c1 changes 
 			pillarWidth = Math.max( pillarRight - pillarLeft, 3 );
+			//pillarWidth = Math.max( pillarRight - pillarLeft, 6 );
 
 			// The pillar should reflects exactly the shape of the hovered
 			// column border line.
+			
+			// c1 changes 
 			pillars.push( {
 				table: table,
 				index: pillarIndex,
-				x: pillarLeft,
+				x: pillarLeft - 10,
 				y: tbodyPosition.y,
-				width: pillarWidth,
+				width: pillarWidth + 10,
 				height: tbody.$.offsetHeight,
 				rtl: rtl } );
-		}
+			//pillars.push( {
+			//	table: table,
+			//	index: pillarIndex,
+			//	x: pillarLeft - 10,
+			//	y: tbodyPosition.y,
+			//	width: pillarWidth + 10,
+			//	height: tbody.$.offsetHeight,
+			//	rtl: rtl } );
+			}
 
 		return pillars;
 	}
