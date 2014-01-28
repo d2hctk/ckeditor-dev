@@ -16,6 +16,8 @@
 		init: function( editor ) {
 			var undoManager = editor.undoManager = new UndoManager( editor );
 
+			editor.define('c1AfterSnapshotLoad', { errorProof: true }); // C1
+			
 			var undoCommand = editor.addCommand( 'undo', {
 				exec: function() {
 					if ( undoManager.undo() ) {
@@ -498,6 +500,7 @@
 			this.update();
 			this.fireChange();
 
+			editor.fire( 'c1AfterSnapshotLoad' ); // C1
 			editor.fire( 'change' );
 		},
 
