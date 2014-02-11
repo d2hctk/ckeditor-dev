@@ -17,6 +17,7 @@
 			var undoManager = editor.undoManager = new UndoManager( editor );
 
 			editor.define('c1AfterSnapshotLoad', { errorProof: true }); // C1
+			editor.define('c1AfterSnapshotSave', { errorProof: true }); // C1
 			
 			var undoCommand = editor.addCommand( 'undo', {
 				exec: function() {
@@ -457,6 +458,9 @@
 
 			if ( autoFireChange !== false )
 				this.fireChange();
+				
+			this.editor.fire('c1AfterSnapshotSave', image);	// C1					
+				
 			return true;
 		},
 
@@ -504,45 +508,6 @@
 			editor.fire( 'change' );
 		},
 
-		// C1
-		getUndoCount: function(){
-			if (this.hasUndo == false) return 0;
-			var currentImage = this.currentImage,
-				image,
-				index = this.index + 1;
-			if (!currentImage) return 0;
-			
-			var snapshots = this.snapshots;
-			if (snapshots.length == 0) return 0;
-			
-			this.save( true );
-			
-			for (var i = index - 1; i >= 0; i-- ) {
-				image = snapshots[ i ];
-				if ( !currentImage.equalsContent( image ) ) {
-					i++;
-					break;
-				}
-			}	
-			
-			var sOld = null,
-				sNew = null,
-				qty = 0;
-			for(var s = 0; s <= i; s++){
-				var sNew = snapshots[s];
-				if (sOld === null){
-					sOld = sNew;
-					continue;
-				}
-				if (sOld.equalsContent(sNew))
-					continue;
-				sOld = sNew;
-				qty++;
-			}
-			
-			return qty;
-		},
-		
 		// Get the closest available image.
 		getNextImage: function( isUndo ) {
 			var snapshots = this.snapshots,
@@ -646,7 +611,9 @@
 			// only by selection) and replace all of them with the current image.
 			while ( i > 0 && this.currentImage.equalsContent( snapshots[ i - 1 ] ) )
 				i -= 1;
-
+				
+			newImage.description = snapshots[i].description; // C1
+			
 			snapshots.splice( i, this.index - i + 1, newImage );
 			this.index = i;
 			this.currentImage = newImage;
