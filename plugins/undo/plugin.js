@@ -319,12 +319,17 @@
 						// It's safe to now indicate typing state.
 						this.typing = true;
 
+						/* C1 Commented
 						// This's a special save, with specified snapshot
 						// and without auto 'fireChange'.
 						if ( !this.save( false, beforeTypeImage, false ) )
 							// Drop future snapshots.
 							this.snapshots.splice( this.index + 1, this.snapshots.length - this.index - 1 );
-
+						*/
+							
+						// C1 Added
+						this.update(beforeTypeImage);
+							
 						this.hasUndo = true;
 						this.hasRedo = false;
 
@@ -416,6 +421,7 @@
 		/**
 		 * Saves a snapshot of the document image for later retrieval.
 		 */
+	 
 		save: function( onContentOnly, image, autoFireChange ) {
 			// Do not change snapshots stack when locked.
 			if ( this.locked )
