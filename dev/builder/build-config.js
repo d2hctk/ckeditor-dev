@@ -51,7 +51,7 @@ var CKBUILDER_CONFIG = {
 	'plugins/image2',
 	'plugins/language',
 //'plugins/lineutils',
-	'plugins/link',
+//'plugins/link',
 	'plugins/listblock',
 	'plugins/liststyle',
 	'plugins/magicline',
