@@ -327,12 +327,12 @@
 							this.snapshots.splice( this.index + 1, this.snapshots.length - this.index - 1 );
 						*/
 							
-						// C1 Added
-						this.update(beforeTypeImage);
-							
 						this.hasUndo = true;
 						this.hasRedo = false;
 
+						// C1 Added
+						this.update(beforeTypeImage);
+						
 						this.typesCount = 1;
 						this.modifiersCount = 1;
 
@@ -566,7 +566,9 @@
 		 */
 		undo: function() {
 			if ( this.undoable() ) {
-				this.save( true );
+				// C1: added condition
+				if (this.typing === true)
+					this.save( false );
 
 				var image = this.getNextImage( true );
 				if ( image )
@@ -583,7 +585,9 @@
 			if ( this.redoable() ) {
 				// Try to save. If no changes have been made, the redo stack
 				// will not change, so it will still be redoable.
-				this.save( true );
+				// C1: added condition
+				if (this.typing === true)
+					this.save( false );
 
 				// If instead we had changes, we can't redo anymore.
 				if ( this.redoable() ) {
@@ -676,6 +680,11 @@
 		 * @since 4.0
 		 */
 		unlock: function() {
+			// C1 start
+			if (this.undoable() === false && this.index === 0 ){
+				this.editor.resetDirty();
+			}
+			// C1 end
 			if ( this.locked ) {
 				// Decrease level of lock and check if equals 0, what means that undoM is completely unlocked.
 				if ( !--this.locked.level ) {
